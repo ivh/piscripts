@@ -1,5 +1,3 @@
-SAVEDIR='/home/pi/cams/'
-
 import os
 import subprocess
 import errno
@@ -8,6 +6,9 @@ from time import sleep
 
 from datetime import datetime,timedelta
 datestring = str(datetime.today().date())
+
+SAVEDIR='/home/pi/cams/'
+GALLERYTRIGGER = os.path.join(SAVEDIR,'galleryTrigger')
 
 import pushnotify as pn
 pn.logging.basicConfig()
@@ -37,13 +38,12 @@ def notify(descr, title='Motion',
     lastNotify = datetime.now()
 
     if updateGallery:
-        updateGallery()
+       os.utime(GALLERYTRIGGER,None)
 
-def updateGallery(src='/home/pi/cams/', dst='/home/pi/www/',
-                    cfg='/home/pi/.sigal.conf'):
-    devnull = open(os.devnull, 'wb')
-    cmd = 'sleep 10 && sigal build -c %s %s %s'%(cfg, src, dst)
-    subprocess.Popen(cmd, shell=True, stdout=devnull, stderr=devnull)
+def updateGallery(cmd='nohup /home/pi/scripts/galleryUpload.sh &'):
+    os.system(cmd)
+    #with open(os.devnull, 'wb') as devnull:
+    #    subprocess.Popen(cmd, stdout=devnull, stderr=devnull)
 
 
 def make_sure_dir_exists(path):

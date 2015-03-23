@@ -11,6 +11,7 @@ motion_size = (640,480)
 thresh = 20
 sensit = 200
 
+
 class DetectMotion(picamera.array.PiMotionAnalysis):
     def analyse(self, a):
         a = np.sqrt(
