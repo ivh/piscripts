@@ -9,6 +9,8 @@ datestring = str(datetime.today().date())
 
 SAVEDIR='/home/pi/cams/'
 GALLERYTRIGGER = os.path.join(SAVEDIR,'galleryTrigger')
+#GALLERYURL = 'https://oin.tmy.se/%s/'%datestring,
+GALLERYURL = 'https://tmy.se/oin/www/%s/'%datestring,
 
 import pushnotify as pn
 pn.logging.basicConfig()
@@ -20,7 +22,7 @@ notifyDelta = timedelta(minutes=15)
 lastNotify = datetime.now() - notifyDelta
 
 def notify(descr, title='Motion',
-        url='https://oin.tmy.se/%s/'%datestring, urltitle='Go to gallery...',
+        url=GALLERYURL urltitle='Go to gallery...',
         updateGallery=False):
 
     global lastNotify
@@ -39,12 +41,6 @@ def notify(descr, title='Motion',
 
     if updateGallery:
        os.utime(GALLERYTRIGGER,None)
-
-def updateGallery(cmd='nohup /home/pi/scripts/galleryUpload.sh &'):
-    os.system(cmd)
-    #with open(os.devnull, 'wb') as devnull:
-    #    subprocess.Popen(cmd, stdout=devnull, stderr=devnull)
-
 
 def make_sure_dir_exists(path):
     try:

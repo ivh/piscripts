@@ -8,3 +8,4 @@ sleep 25
 sigal build -c $cfg $src $dst
 
 rsync -aP --delete /home/pi/cams /home/pi/www bomba:sites/oin/ 
+date
