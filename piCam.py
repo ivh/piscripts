@@ -8,8 +8,8 @@ from camcommon import *
 #capture_size = (640,480)
 capture_size = (864,648)
 motion_size = (640,480)
-thresh = 20
-sensit = 200
+thresh = 30
+sensit = 400
 
 
 class DetectMotion(picamera.array.PiMotionAnalysis):

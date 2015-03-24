@@ -22,7 +22,7 @@ notifyDelta = timedelta(minutes=15)
 lastNotify = datetime.now() - notifyDelta
 
 def notify(descr, title='Motion',
-        url=GALLERYURL urltitle='Go to gallery...',
+        url=GALLERYURL, urltitle='Go to gallery...',
         updateGallery=False):
 
     global lastNotify
