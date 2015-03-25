@@ -5,12 +5,15 @@ import numpy as np
 from time import sleep
 
 from datetime import datetime,timedelta
-datestring = str(datetime.today().date())
 
 SAVEDIR='/home/pi/cams/'
 GALLERYTRIGGER = os.path.join(SAVEDIR,'galleryTrigger')
 #GALLERYURL = 'https://oin.tmy.se/%s/'%datestring,
-GALLERYURL = 'https://tmy.se/oin/www/%s/'%datestring,
+GALLERYURL = 'https://tmy.se/oin/www/',
+def datestring():
+    return str(datetime.today().date())
+def galleryurl():
+    return GALLERYURL + datestring() + '/'
 
 import pushnotify as pn
 pn.logging.basicConfig()
@@ -21,8 +24,8 @@ p.apikeys={NOTIFY_USERKEY:[]}
 notifyDelta = timedelta(minutes=15)
 lastNotify = datetime.now() - notifyDelta
 
-def notify(descr, title='Motion',
-        url=GALLERYURL, urltitle='Go to gallery...',
+def notify(descr, title=None,
+        url=None, urltitle=None,
         updateGallery=False):
 
     global lastNotify

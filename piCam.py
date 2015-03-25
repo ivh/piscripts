@@ -25,7 +25,8 @@ class DetectMotion(picamera.array.PiMotionAnalysis):
             #camera.capture_sequence(
             #    [getFileName(suffix='')+'_%02d.jpg'%i for i in range(3)],
             camera.capture(fname,use_video_port=True, quality = 70)
-            notify('PiCam: ' + fname.split('/')[-1], updateGallery=True)
+            notify('PiCam: ' + fname.split('/')[-1], updateGallery=True,
+                    url=galleryurl(), urltitle='Go to gallery...')
 
 with picamera.PiCamera() as camera:
     with DetectMotion(camera, size=motion_size) as output:

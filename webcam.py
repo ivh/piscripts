@@ -14,8 +14,8 @@ PICURL = 'http://192.168.1.6/image.jpg'
 
 DET_INTERVAL = 2
 RECORD_DURATION = 10
-THRESH = 75
-MINPIX = 2200
+THRESH = 65
+MINPIX = 2000
 
 
 def getImage():
@@ -46,7 +46,8 @@ def main():
         if detectMotion(curr,last):
             fname = getFileName()
             curr.transpose(Image.ROTATE_270).save(fname,format='jpeg')
-            notify('WebCam: ' + fname.split('/')[-1], updateGallery=True)
+            notify('WebCam: ' + fname.split('/')[-1], updateGallery=True,
+                    url=galleryurl(), urltitle='Go to gallery...')
         last=curr
         sleep(DET_INTERVAL)
 
