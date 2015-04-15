@@ -3,6 +3,7 @@ from PIL import Image
 from StringIO import StringIO
 import requests
 import scipy.ndimage as ndimage
+from collections import deque
 
 from camcommon import *
 
@@ -14,8 +15,8 @@ PICURL = 'http://192.168.1.6/image.jpg'
 
 DET_INTERVAL = 2
 RECORD_DURATION = 10
-THRESH = 65
-MINPIX = 2000
+THRESH = 75
+MINPIX = 2200
 
 
 def getImage():
@@ -40,6 +41,7 @@ def detectMotion(curr,last):
     return isMoving
 
 def main():
+    lastOnes = deque((0,)*10,maxlen=10)
     last=getImage()
     while True:
         curr = getImage()
@@ -48,8 +50,10 @@ def main():
             curr.transpose(Image.ROTATE_270).save(fname,format='jpeg')
             notify('WebCam: ' + fname.split('/')[-1], updateGallery=True,
                     url=galleryurl(), urltitle='Go to gallery...')
+            lastOnes.appendleft(1)
+            print sum(lastOnes)
         last=curr
-        sleep(DET_INTERVAL)
+        sleep(DET_INTERVAL * (sum(lastOnes) + 1))
 
 
 
