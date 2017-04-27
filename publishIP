@@ -1,8 +1,8 @@
 #!/bin/bash
 
 IP=`dig +short myip.opendns.com @resolver1.opendns.com`
-echo $IP | ssh bomba "cat > t/oinIP.txt"
+echo $IP | ssh ori "cat > t/piIP.txt"
 
 source /home/pi/bin/setCreds.sh
 
-curl -s --user "$LOOPIA" "http://dns.loopia.se/XDynDNSServer/XDynDNS.php?hostname=oin.tmy.se&myip=$IP"
+curl -s --user "$LOOPIA" "http://dns.loopia.se/XDynDNSServer/XDynDNS.php?hostname=pi.tmy.se&myip=$IP"
