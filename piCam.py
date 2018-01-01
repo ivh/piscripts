@@ -1,45 +1,44 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import picamera
 import picamera.array
 from camcommon import *
 
-#capture_size = (1296,972)
-#capture_size = (640,480)
-capture_size = (864,648)
-motion_size = (640,480)
-thresh = 30
-sensit = 400
+import RPi.GPIO as GPIO
+GPIO.setmode(GPIO.BOARD)
+MOTI = 40 # last pin is motion sensor
+GPIO.setup(MOTI, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+BOUNCE = 10 # seconds
 
+def record(camera, duration=BOUNCE, fname=None):
+    if not fname:
+        fname=getFileName(prefix='cam',suffix='h264')
+    camera.start_recording(fname)
+    print('Recording to %s ...'%fname, end='', flush=True)
+    msg = po.msg('Recording %s'%fname.split('/')[-1])
+    msg.set("title", "Motion!")
+    msg.set("url", "https://tmy.se/cams/foo")
+    po.send(msg)
 
-class DetectMotion(picamera.array.PiMotionAnalysis):
-    def analyse(self, a):
-        a = np.sqrt(
-            np.square(a['x'].astype(np.float)) +
-            np.square(a['y'].astype(np.float))
-            ).clip(0, 255).astype(np.uint8)
-        asum = (a > thresh).sum()
-        if asum > sensit:
-            print 'Capturing a=%s: '%asum + datetime.now().isoformat()
-            fname = getFileName()
-            #camera.capture_sequence(
-            #    [getFileName(suffix='')+'_%02d.jpg'%i for i in range(3)],
-            camera.capture(fname,use_video_port=True, quality = 70)
-            notify('PiCam: ' + fname.split('/')[-1], updateGallery=True,
-                    url=galleryurl(), urltitle='Go to gallery...')
+    camera.wait_recording(duration)
+    camera.stop_recording()
+    print(' done.')
+
 
 with picamera.PiCamera() as camera:
-    with DetectMotion(camera, size=motion_size) as output:
-        camera.resolution = capture_size
-        camera.framerate = 2
-        camera.rotation = 180
-        camera.start_preview()
-        sleep(4)
-        camera.start_recording('/dev/null',
-            format='h264', motion_output=output, resize=motion_size)
+    camera.resolution =  (640,480)
+    #camera.resolution =  (1296,972)
+    camera.framerate = 5
+    camera.rotation = 180
+    camera.start_preview()
+    camera.meter_mode='matrix'
+    camera.exposure_compensation=9
 
-        try:
-            while True:
-                camera.wait_recording(1)
-        finally:
-            camera.stop_recording()
+    GPIO.add_event_detect(40,GPIO.RISING,bouncetime=BOUNCE*1000,
+        callback=lambda chan: record(camera))
+
+    while True:
+            sleep(0.1)
+
+
+GPIO.cleanup()
