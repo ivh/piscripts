@@ -5,6 +5,8 @@ import numpy as np
 from time import sleep
 import arrow
 from datetime import datetime,timedelta
+notifyDelta = timedelta(minutes=15)
+lastNotify = datetime.now() - notifyDelta
 
 SAVEDIR='/home/pi/cams/'
 
@@ -12,19 +14,15 @@ from pushover import Pushover
 po = Pushover(os.environ.get('NOTIFY_APPKEY'))
 po.user(os.environ.get('NOTIFY_USERKEY'))
 
-def notify(descr, title=None):
+def notify(po , title='Hej!', message='Foo', url=None):
     global lastNotify
     if (datetime.now() - lastNotify) < notifyDelta:
         return
-    if not title:
-        title=descr
-    if not url:
-        kwargs = None
-    else:
-        if not urltitle:
-            urltitle=url
-        kwargs={'url':url,'url_title':urltitle}
-    p.notify(description=descr,event=title,kwargs=kwargs)
+    msg=po.msg(message)
+    msg.set('title',title)
+    if url:
+        msg.set('url',url)
+    po.send(msg)
     lastNotify = datetime.now()
 
 def make_sure_dir_exists(path):
