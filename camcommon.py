@@ -3,31 +3,16 @@ import subprocess
 import errno
 import numpy as np
 from time import sleep
-
+import arrow
 from datetime import datetime,timedelta
 
 SAVEDIR='/home/pi/cams/'
-GALLERYTRIGGER = os.path.join(SAVEDIR,'galleryTrigger')
-#GALLERYURL = 'https://oin.tmy.se/%s/'%datestring,
-GALLERYURL = 'https://tmy.se/oin/www/',
-def datestring():
-    return str(datetime.today().date())
-def galleryurl():
-    return GALLERYURL + datestring() + '/'
 
-import pushnotify as pn
-pn.logging.basicConfig()
-NOTIFY_APPKEY = os.environ.get('NOTIFY_APPKEY')
-NOTIFY_USERKEY = os.environ.get('NOTIFY_USERKEY')
-p=pn.pushover.Client(developerkey=NOTIFY_APPKEY)
-p.apikeys={NOTIFY_USERKEY:[]}
-notifyDelta = timedelta(minutes=15)
-lastNotify = datetime.now() - notifyDelta
+from pushover import Pushover
+po = Pushover(os.environ.get('NOTIFY_APPKEY'))
+po.user(os.environ.get('NOTIFY_USERKEY'))
 
-def notify(descr, title=None,
-        url=None, urltitle=None,
-        updateGallery=False):
-
+def notify(descr, title=None):
     global lastNotify
     if (datetime.now() - lastNotify) < notifyDelta:
         return
@@ -42,9 +27,6 @@ def notify(descr, title=None,
     p.notify(description=descr,event=title,kwargs=kwargs)
     lastNotify = datetime.now()
 
-    if updateGallery:
-       os.utime(GALLERYTRIGGER,None)
-
 def make_sure_dir_exists(path):
     try:
         os.makedirs(path)
@@ -52,12 +34,10 @@ def make_sure_dir_exists(path):
         if exception.errno != errno.EEXIST:
             raise
 
-def getFileName(prefix='',suffix='.jpg',base=SAVEDIR):
-    timestring = datetime.now().isoformat()
-    timestring = timestring.replace(':','-')
-    datestring = timestring.split('T')[0]
-    make_sure_dir_exists(os.path.join(base, datestring))
-    return  os.path.join(base, datestring, prefix + timestring + suffix)
+def getFileName(prefix='',suffix='jpg',base=SAVEDIR):
+    timestring = arrow.utcnow().to('Europe/Stockholm').format('YYYY-MM-DD HH:mm:ss')
+    make_sure_dir_exists(base)
+    return  os.path.join(base, '.'.join((prefix, timestring, suffix)))
 
 
 def rebin_factor( a, newshape ):
