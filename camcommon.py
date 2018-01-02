@@ -33,7 +33,8 @@ def make_sure_dir_exists(path):
             raise
 
 def getFileName(prefix='',suffix='jpg',base=SAVEDIR):
-    timestring = arrow.utcnow().to('Europe/Stockholm').format('YYYY-MM-DD HH:mm:ss')
+    timestring = arrow.utcnow().to('Europe/Stockholm').format(\
+                        'YYYY-MM-DD_HH-mm-ss')
     make_sure_dir_exists(base)
     return  os.path.join(base, '.'.join((prefix, timestring, suffix)))
 

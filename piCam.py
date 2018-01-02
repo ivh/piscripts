@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import picamera
-import picamera.array
+import subprocess
 from camcommon import *
 
 import RPi.GPIO as GPIO
@@ -13,14 +13,17 @@ BOUNCE = 10 # seconds
 def record(camera, duration=BOUNCE, fname=None):
     if not fname:
         fname=getFileName(prefix='cam',suffix='h264')
+    dirname,basename = os.path.split(fname)
+
     camera.start_recording(fname)
     print('Recording to %s ...'%fname, end='', flush=True)
 
-    notify(po, "Motion!", 'Recording %s'%os.path.basename(fname),
-		url="https://tmy.se/cams/%s"%os.path.basename(fname))
+    notify(po, "Motion!", 'Recording %s'%basename,
+		url="https://tmy.se/cams/%s.mp4"%basename)
 
     camera.wait_recording(duration)
     camera.stop_recording()
+    subprocess.call(['MP4Box', '-fps', '15', '-add', fname, '%s.mp4'%fname])
     print(' done.')
 
 
