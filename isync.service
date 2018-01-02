@@ -1,0 +1,12 @@
+[Unit]
+Description=Sync files after writing using inotify
+
+[Service]
+Type=simple
+User=pi
+ExecStart=/home/pi/piscripts/isync.sh
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+

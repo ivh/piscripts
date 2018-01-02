@@ -1,0 +1,13 @@
+[Unit]
+Description=PiCamera motion recorder
+
+[Service]
+Type=simple
+User=pi
+EnvironmentFile=/home/pi/bin/setCreds.sh
+ExecStart=/home/pi/piscripts/piCam.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+
