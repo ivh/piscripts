@@ -1,7 +1,6 @@
 import os
 import subprocess
 import errno
-import numpy as np
 from time import sleep
 import arrow
 from datetime import datetime,timedelta
@@ -37,15 +36,4 @@ def getFileName(prefix='',suffix='jpg',base=SAVEDIR):
                         'YYYY-MM-DD_HH-mm-ss')
     make_sure_dir_exists(base)
     return  os.path.join(base, '.'.join((prefix, timestring, suffix)))
-
-
-def rebin_factor( a, newshape ):
-        '''Rebin an array to a new shape.
-        newshape must be a factor of a.shape.
-        '''
-        assert len(a.shape) == len(newshape)
-        assert not np.sometrue(np.mod( a.shape, newshape ))
-
-        slices = [ slice(None,None, old/new) for old,new in zip(a.shape,newshape) ]
-        return a[slices]
 
