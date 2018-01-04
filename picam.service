@@ -6,6 +6,9 @@ Type=simple
 User=pi
 EnvironmentFile=/home/pi/bin/setCreds.sh
 ExecStart=/home/pi/piscripts/piCam.py
+KillSignal=SIGINT
+TimeoutStopSec=2s
+RestartSec=200ms
 Restart=always
 
 [Install]
