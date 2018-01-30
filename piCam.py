@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import picamera
-import subprocess
 from camcommon import *
 
 import Adafruit_SSD1306
@@ -32,6 +31,8 @@ def record(camera, disp=disp, image=image, duration=BOUNCE, fname=None):
     GPIO.output(LAMP,LAMPON)
     disp.image(image)
     disp.display()
+    camera.start_preview()
+    sleep(2)
     camera.start_recording(fname)
     print('Recording to %s ...'%fname, end='', flush=True)
 
@@ -40,6 +41,7 @@ def record(camera, disp=disp, image=image, duration=BOUNCE, fname=None):
 
     camera.wait_recording(duration)
     camera.stop_recording()
+    camera.stop_preview()
     GPIO.output(LAMP,LAMPOFF)
     subprocess.call(['MP4Box', '-fps', '15', '-add', fname, '%s.mp4'%fname],
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,)
@@ -61,7 +63,6 @@ try:
         camera.resolution =  (1296,972)
         camera.framerate = 3
         camera.rotation = 180
-        camera.start_preview()
         camera.meter_mode='matrix'
         camera.exposure_compensation=6
 
